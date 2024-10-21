@@ -44,7 +44,18 @@ def get_pr_files(pr_url: str):
         response = requests.get(url, headers=headers)
 
         if response.status_code == 200:
-            return response.json()
+            files_data = response.json()
+
+            # Format the response to show relevant file details
+            formatted_files = []
+            for file in files_data:
+                formatted_files.append({
+                    "filename": file['filename'],
+                    "changes": file['changes'],
+                    "patch": file.get('patch', 'No patch available')  # Patch may be missing in some cases
+                })
+
+            return {"files": formatted_files}
         else:
             raise HTTPException(status_code=response.status_code, detail="Failed to fetch PR files")
 
